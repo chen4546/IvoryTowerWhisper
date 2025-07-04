@@ -55,3 +55,11 @@ sealed class Screen {
     object Login : Screen()
     object Analysis : Screen()
 }
+// 添加历史记录模型
+data class EmotionHistory(
+    val id: Long = 0,
+    val text: String,
+    val emotion: String,
+    val score: Float,
+    val timestamp: Long = System.currentTimeMillis()
+)

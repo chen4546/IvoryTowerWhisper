@@ -1,12 +1,14 @@
 package com.chen.ivorytowerwhisper.viewmodels
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chen.ivorytowerwhisper.data.remote.DeepSeekService
 import com.chen.ivorytowerwhisper.data.remote.RetrofitClient
 import com.chen.ivorytowerwhisper.model.EmotionAnalysisRequest
 import com.chen.ivorytowerwhisper.model.EmotionAnalysisResponse
+import com.chen.ivorytowerwhisper.model.EmotionHistory
 import com.chen.ivorytowerwhisper.model.EmotionResult
 import com.chen.ivorytowerwhisper.model.EmotionState
 import com.chen.ivorytowerwhisper.model.Message
@@ -29,7 +31,19 @@ class EmotionViewModel : ViewModel() {
 
     private val _emotionState = MutableStateFlow<EmotionState>(EmotionState.Idle)
     val emotionState: StateFlow<EmotionState> = _emotionState
-
+    // 添加历史记录
+    private val _history = mutableStateListOf<EmotionHistory>()
+    val history: List<EmotionHistory> get() = _history
+    // 优化提示词
+    private val systemPrompt = """
+    你是一位大学心理辅导员，请分析学生文本并返回JSON格式结果：
+    {
+      "emotion": "情绪名称",
+      "score": 0-1的置信度,
+      "advice": "针对大学生的具体建议"
+    }
+    注意关注学业压力、人际关系等校园常见问题。
+    """.trimIndent()
     fun setApiKey(key: String) {
         _apiKey.value = key
     }
@@ -44,14 +58,7 @@ class EmotionViewModel : ViewModel() {
             _emotionState.value = EmotionState.Loading
             try {
                 val messages = listOf(
-                    Message("system","""
-                                    你作为大学心理健康专家，请分析学生文本，特别注意：
-                                    1. 学业压力表现：考试焦虑、拖延症、GPA压力
-                                    2. 社交挑战：室友矛盾、社团压力
-                                    3. 身份认同：专业选择困惑、职业迷茫
-                                    4. 经济压力：兼职负担、学费担忧
-                                    请用JSON格式返回：{emotion(情绪名称):String, score(情绪强度):Float, advice(中文建议):String}
-                                    """),
+                    Message("system",systemPrompt),
                     Message("user", text)
                 )
 
@@ -67,6 +74,13 @@ class EmotionViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     val result = parseEmotionResponse(response.body())
                     _emotionState.value = EmotionState.Success(result)
+                    // 保存到历史记录
+                    _history.add(EmotionHistory(
+                        text = text.take(20) + "...",
+                        emotion = result.emotion,
+                        score = result.score
+                    ))
+                    //if (_history.size > 7) _history.removeFirst()
                 } else {
                     val errorBody = response.errorBody()?.string() ?: "未知错误"
                     _emotionState.value = EmotionState.Error("API错误: ${response.code()} - $errorBody\"")

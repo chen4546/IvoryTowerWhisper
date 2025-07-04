@@ -43,6 +43,11 @@ val Green80 = Color(0xFF81C784)
 
 val Red40 = Color(0xFFF44336)
 val Red80 = Color(0xFFE57373)
+val EmotionHappy = Color(0xFF4CAF50)
+val EmotionCalm = Color(0xFF2196F3)
+val EmotionSad = Color(0xFF9C27B0)
+val EmotionAngry = Color(0xFFF44336)
+val EmotionAnxious = Color(0xFFFF9800)
 
 @Composable
 fun IvoryTowerWhisperTheme(

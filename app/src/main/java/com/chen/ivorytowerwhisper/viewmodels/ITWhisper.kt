@@ -1,6 +1,13 @@
 package com.chen.ivorytowerwhisper.viewmodels
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +20,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -49,20 +58,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.chen.ivorytowerwhisper.model.EmotionHistory
 import com.chen.ivorytowerwhisper.model.EmotionResult
 import com.chen.ivorytowerwhisper.model.EmotionState
 import com.chen.ivorytowerwhisper.model.Screen
 import com.chen.ivorytowerwhisper.ui.theme.Blue40
 import com.chen.ivorytowerwhisper.ui.theme.Blue80
+import com.chen.ivorytowerwhisper.ui.theme.EmotionAngry
+import com.chen.ivorytowerwhisper.ui.theme.EmotionAnxious
+import com.chen.ivorytowerwhisper.ui.theme.EmotionCalm
+import com.chen.ivorytowerwhisper.ui.theme.EmotionHappy
+import com.chen.ivorytowerwhisper.ui.theme.EmotionSad
 import com.chen.ivorytowerwhisper.ui.theme.Green40
 import com.chen.ivorytowerwhisper.ui.theme.Green80
 import com.chen.ivorytowerwhisper.ui.theme.IvoryTowerWhisperTheme
@@ -246,7 +263,7 @@ fun LoginScreen(onLoginSuccess: (String, String) -> Unit) {
                 else -> {}
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // 登录按钮
             Button(
@@ -292,7 +309,7 @@ fun LoginScreen(onLoginSuccess: (String, String) -> Unit) {
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // 提示信息
             Row(
@@ -323,7 +340,9 @@ fun AnalysisScreen(apiKey: String, username: String) {
     val viewModel: EmotionViewModel = viewModel()
     var inputText by remember { mutableStateOf("") }
     var inputErrorMessage by remember { mutableStateOf<String?>(null) }
-
+    // 添加情境选择
+    var selectedContext by remember { mutableStateOf("学习") }
+    val contexts = listOf("学习", "社交", "宿舍", "考试", "恋爱", "家庭")
     // 初始化 ViewModel 的 API Key
     LaunchedEffect(apiKey) {
         viewModel.setApiKey(apiKey)
@@ -331,17 +350,23 @@ fun AnalysisScreen(apiKey: String, username: String) {
 
     // 观察 ViewModel 的状态变化
     val emotionState by viewModel.emotionState.collectAsState()
-
+    // 校园心理资源
+    val campusResources = listOf(
+        "心理热线: 400-161-9995",
+        "校心理咨询: 021-12345678",
+        "24小时援助: 010-82951332"
+    )
     // 情绪类型对应的颜色
     val emotionColors = mapOf(
-        "快乐" to Green80,
-        "平静" to Blue80,
-        "悲伤" to Purple80,
-        "愤怒" to Red80,
-        "焦虑" to Red40,
+        "快乐" to EmotionHappy,
+        "平静" to EmotionCalm,
+        "悲伤" to EmotionSad,
+        "愤怒" to EmotionAngry,
+        "焦虑" to EmotionAnxious,
         "中性" to MaterialTheme.colorScheme.secondary,
         // 添加更多可能的情绪类型
-        "兴奋" to Green40,
+        "兴奋" to EmotionHappy.copy(alpha = 0.8f),
+        "压力" to EmotionAnxious,
         "恐惧" to Purple40,
         "失望" to MaterialTheme.colorScheme.tertiary
     )
@@ -391,7 +416,30 @@ fun AnalysisScreen(apiKey: String, username: String) {
                 .padding(horizontal = 16.dp)
         ) {
             item {
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+                LazyRow {
+                    items (contexts){ context ->
+                        val isSelected=context ==selectedContext
+                        Box(
+                            modifier = Modifier
+                                .padding(end = 8.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(
+                                    if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                                    else MaterialTheme.colorScheme.surfaceVariant
+                                )
+                                .clickable { selectedContext = context }
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                        ){
+                            Text(
+                                text = context,
+                                color = if(isSelected) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // 输入区域
                 Card(
@@ -487,7 +535,7 @@ fun AnalysisScreen(apiKey: String, username: String) {
                     }
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // 结果展示区域
                 when (emotionState) {
@@ -558,6 +606,77 @@ fun AnalysisScreen(apiKey: String, username: String) {
                 }
             }
         }
+        if (emotionState is EmotionState.Loading){
+            Column (
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){  CircularProgressIndicator(
+                modifier = Modifier.padding(16.dp),
+                color = MaterialTheme.colorScheme.primary
+            )
+                // 呼吸动画文本
+                val infiniteTransition = rememberInfiniteTransition()
+                val scale by infiniteTransition.animateFloat(
+                    initialValue = 0.9f,
+                    targetValue = 1.1f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(1000, easing = FastOutSlowInEasing),
+                        repeatMode = RepeatMode.Reverse
+                    )
+                )
+                Text(
+                    "正在分析中...深呼吸放松一下",
+                    modifier = Modifier.scale(scale),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+        if (viewModel.history.isNotEmpty()){
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                "近期情绪记录",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            LazyRow {
+                items(viewModel.history) { item ->
+                    EmotionHistoryItem(item, emotionColors)
+                }
+            }
+        }
+
+        /*if (emotionState is EmotionState.Success) {
+            val result = (emotionState as EmotionState.Success).result
+            EmotionResultCard(result, emotionColors)
+
+            // 校园资源卡片
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f)
+                )
+            ) {
+                /*Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        "校园心理资源",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    campusResources.forEach { resource ->
+                        Text(
+                            "• $resource",
+                            modifier = Modifier.padding(vertical = 4.dp),
+                            fontSize = 14.sp
+                        )
+                    }
+                }*/
+            }
+        }*/
 
         // 底部信息
         Box(
@@ -576,6 +695,47 @@ fun AnalysisScreen(apiKey: String, username: String) {
     }
 }
 
+@Composable
+fun EmotionHistoryItem(item: EmotionHistory, emotionColors: Map<String, Color>) {
+    val color = emotionColors[item.emotion] ?: MaterialTheme.colorScheme.primary
+
+    Card(
+        modifier = Modifier
+            .width(120.dp)
+            .padding(end = 8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = color.copy(alpha = 0.1f)
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                item.emotion,
+                fontWeight = FontWeight.Bold,
+                color = color
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                "${(item.score * 100).toInt()}%",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                item.text,
+                fontSize = 12.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
 @Composable
 fun EmotionResultCard(result: EmotionResult, emotionColors: Map<String, Color>) {
     Card(
@@ -649,7 +809,7 @@ fun EmotionResultCard(result: EmotionResult, emotionColors: Map<String, Color>) 
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // 建议区域
             Text(
@@ -693,7 +853,7 @@ fun EmotionResultCard(result: EmotionResult, emotionColors: Map<String, Color>) 
         }
     }
 
-    Spacer(modifier = Modifier.height(24.dp))
+    Spacer(modifier = Modifier.height(16.dp))
 }
 
 
