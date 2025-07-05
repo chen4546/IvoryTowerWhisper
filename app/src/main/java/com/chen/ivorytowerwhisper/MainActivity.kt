@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
                 Configuration.UI_MODE_NIGHT_YES -> isDarkTheme = true
                 Configuration.UI_MODE_NIGHT_NO -> isDarkTheme = false
             }
-            IvoryTowerWhisperTheme {
+            IvoryTowerWhisperTheme(darkTheme = isDarkTheme) {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     ITWhisper(innerPadding = innerPadding)
                 }

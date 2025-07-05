@@ -100,6 +100,7 @@ class EmotionViewModel (application: Application): AndroidViewModel(application)
                         emotion = result.emotion,
                         score = result.score
                     ))
+                    saveHistory()
                     //if (_history.size > 7) _history.removeFirst()
                 } else {
                     val errorBody = response.errorBody()?.string() ?: "未知错误"

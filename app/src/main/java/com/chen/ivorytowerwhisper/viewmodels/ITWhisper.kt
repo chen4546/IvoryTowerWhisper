@@ -105,6 +105,7 @@ fun ITWhisper(innerPadding: androidx.compose.foundation.layout.PaddingValues) {
     var apiKey by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
     var isDarkTheme by remember { mutableStateOf(false) } // 添加深色模式状态
+    var isDarkMode by remember { mutableStateOf(false) } // 新增：单独管理主题图标状态
     // 从本地加载保存的凭证
     val context = LocalContext.current
     LaunchedEffect(Unit) {
@@ -142,11 +143,16 @@ fun ITWhisper(innerPadding: androidx.compose.foundation.layout.PaddingValues) {
                 onNavigateToHistory = { currentScreen = Screen.History },
                 onBackToLogin = {
                     LocalStorage.clearUserPreferences(context)
+                    LocalStorage.clearAllData(context) // 新增：清除所有数据
                     apiKey = ""
                     username = ""
                     currentScreen = Screen.Login
                 },
-                toggleTheme = { isDarkTheme = !isDarkTheme } // 添加主题切换回调
+                toggleTheme = {
+                    isDarkTheme = !isDarkTheme
+                    isDarkMode = isDarkTheme // 同步主题图标状态
+             },
+                isDarkMode=isDarkMode
             )
 
             Screen.History -> HistoryScreen(
@@ -413,7 +419,8 @@ fun AnalysisScreen(
     username: String,
     onNavigateToHistory: ()-> Unit,
     onBackToLogin: () -> Unit,
-    toggleTheme:()-> Unit
+    toggleTheme:()-> Unit,
+    isDarkMode: Boolean
 ) {
     // 创建 ViewModel 实例
     val viewModel: EmotionViewModel = viewModel()
@@ -479,7 +486,7 @@ fun AnalysisScreen(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
-                Spacer(modifier = Modifier.weight(1f))
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -502,17 +509,13 @@ fun AnalysisScreen(
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
-                Spacer(modifier = Modifier.width(48.dp))
+                Spacer(modifier = Modifier.weight(1f))
+                //Spacer(modifier = Modifier.width(48.dp))
                 //切换主题
-                IconButton(onClick = toggleTheme){
-                    Icon(
-                        painter = painterResource(
-                            if (isSystemInDarkTheme()) R.drawable.ic_sun else R.drawable.ic_moon
-                        ),
-                        contentDescription = "切换主题",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
+                SwitchTheme(
+                    isDarkMode = isDarkMode, // 使用传入的状态
+                    toggleTheme=toggleTheme
+                )
 
             }
                 Text(
@@ -811,6 +814,22 @@ fun AnalysisScreen(
 }
 
 @Composable
+fun SwitchTheme(
+    isDarkMode: Boolean,
+    toggleTheme: () -> Unit){
+    IconButton(onClick = toggleTheme){
+        Icon(
+
+            painter = painterResource(
+                if (isDarkMode) R.drawable.ic_sun else R.drawable.ic_moon
+            ),
+            contentDescription = "切换主题",
+            tint = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
 fun EmotionHistoryItem(item: EmotionHistory, emotionColors: Map<String, Color>) {
     val color = emotionColors[item.emotion] ?: MaterialTheme.colorScheme.primary
 
@@ -985,6 +1004,6 @@ fun PreviewLoginScreen() {
 @Composable
 fun PreviewAnalysisScreen() {
     IvoryTowerWhisperTheme {
-        AnalysisScreen(apiKey = "test_key", username = "张三", onNavigateToHistory = {->}, onBackToLogin = {->}, toggleTheme = {->})
+        AnalysisScreen(apiKey = "test_key", username = "张三", onNavigateToHistory = {->}, onBackToLogin = {->}, isDarkMode = true,toggleTheme = {->})
     }
 }
