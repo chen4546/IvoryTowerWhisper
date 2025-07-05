@@ -1,7 +1,10 @@
 package com.chen.ivorytowerwhisper.viewmodels
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.chen.ivorytowerwhisper.data.local.LocalStorage
 import com.chen.ivorytowerwhisper.data.remote.RetrofitClient
 import com.chen.ivorytowerwhisper.model.EmotionAnalysisRequest
 import com.chen.ivorytowerwhisper.model.Message
@@ -10,12 +13,19 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
-class LoginViewModel: ViewModel() {
+class LoginViewModel(application: Application): AndroidViewModel(application ) {
     private val service = RetrofitClient.deepSeekApiService
 
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
     val loginState: StateFlow<LoginState> = _loginState
-
+    // 加载保存的用户凭证
+    fun loadSavedCredentials() {
+        val context = getApplication<Application>().applicationContext
+        val prefs = LocalStorage.getUserPreferences(context)
+        if (prefs != null) {
+            _loginState.value = LoginState.SavedCredentials(prefs.apiKey, prefs.username)
+        }
+    }
     fun verifyApiKey(apiKey: String) {
         viewModelScope.launch {
             _loginState.value = LoginState.Loading
@@ -65,11 +75,17 @@ class LoginViewModel: ViewModel() {
             }
         }
     }
-
+    // 清除保存的用户凭证
+    fun clearCredentials() {
+        val context = getApplication<Application>().applicationContext
+        LocalStorage.clearUserPreferences(context)
+    }
     sealed class LoginState {
         object Idle : LoginState()
         object Loading : LoginState()
         object Success : LoginState()
         data class Error(val message: String) : LoginState()
+        data class SavedCredentials(val apiKey: String, val username: String) : LoginState()
+
     }
 }

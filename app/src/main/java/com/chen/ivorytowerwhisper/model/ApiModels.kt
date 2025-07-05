@@ -54,6 +54,7 @@ sealed class EmotionState {
 sealed class Screen {
     object Login : Screen()
     object Analysis : Screen()
+    object History: Screen()
 }
 // 添加历史记录模型
 data class EmotionHistory(
@@ -62,4 +63,13 @@ data class EmotionHistory(
     val emotion: String,
     val score: Float,
     val timestamp: Long = System.currentTimeMillis()
+)
+// 添加持久化数据结构
+data class UserPreferences(
+    val apiKey: String,
+    val username: String
+)
+
+data class SavedHistory(
+    val items: List<EmotionHistory>
 )

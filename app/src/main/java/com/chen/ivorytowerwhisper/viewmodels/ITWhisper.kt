@@ -27,7 +27,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
@@ -61,6 +64,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -69,6 +73,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.chen.ivorytowerwhisper.data.local.LocalStorage
 import com.chen.ivorytowerwhisper.model.EmotionHistory
 import com.chen.ivorytowerwhisper.model.EmotionResult
 import com.chen.ivorytowerwhisper.model.EmotionState
@@ -94,7 +99,16 @@ fun ITWhisper(innerPadding: androidx.compose.foundation.layout.PaddingValues) {
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Login) }
     var apiKey by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
-
+    // 从本地加载保存的凭证
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        val prefs = LocalStorage.getUserPreferences(context)
+        if (prefs != null) {
+            apiKey = prefs.apiKey
+            username = prefs.username
+            currentScreen = Screen.Analysis
+        }
+    }
     Surface(
     modifier = Modifier
     .fillMaxSize()
@@ -107,15 +121,32 @@ fun ITWhisper(innerPadding: androidx.compose.foundation.layout.PaddingValues) {
                     apiKey = key
                     username = user
                     currentScreen = Screen.Analysis
+                },
+                onNavigateToHistory = {currentScreen= Screen.History}
+            )
+            Screen.Analysis -> AnalysisScreen(
+                apiKey = apiKey,
+                username = username,
+                onNavigateToHistory = { currentScreen = Screen.History },
+                onBackToLogin = {
+                    currentScreen = Screen.Login
+                })
+            Screen.History -> HistoryScreen (
+                onBack = {
+                    if (apiKey.isNotEmpty()){
+                        currentScreen= Screen.Analysis
+                    }else{
+                        currentScreen= Screen.Login
+                    }
                 }
             )
-            Screen.Analysis -> AnalysisScreen(apiKey = apiKey, username = username)
         }
     }
 }
 
 @Composable
-fun LoginScreen(onLoginSuccess: (String, String) -> Unit) {
+fun LoginScreen(onLoginSuccess: (String, String) -> Unit,
+                onNavigateToHistory: () -> Unit) {
     var username by remember { mutableStateOf("") }
     var apiKey by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -124,7 +155,18 @@ fun LoginScreen(onLoginSuccess: (String, String) -> Unit) {
     // 使用新的LoginViewModel
     val loginViewModel: LoginViewModel = viewModel()
     val loginState by loginViewModel.loginState.collectAsState()
-
+    // 加载保存的凭证
+    LaunchedEffect(Unit) {
+        loginViewModel.loadSavedCredentials()
+    }
+    // 当有保存的凭证时自动填充
+    LaunchedEffect(loginState) {
+        if (loginState is LoginViewModel.LoginState.SavedCredentials) {
+            val saved = loginState as LoginViewModel.LoginState.SavedCredentials
+            username = saved.username
+            apiKey = saved.apiKey
+        }
+    }
     // 当登录成功时，触发回调
     LaunchedEffect(loginState) {
         if (loginState is LoginViewModel.LoginState.Success) {
@@ -310,7 +352,6 @@ fun LoginScreen(onLoginSuccess: (String, String) -> Unit) {
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-
             // 提示信息
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -331,11 +372,32 @@ fun LoginScreen(onLoginSuccess: (String, String) -> Unit) {
                 )
             }
         }
+        // 在底部添加历史记录按钮
+        Button(
+            onClick = onNavigateToHistory,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .padding(top = 16.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onSecondary
+            ),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text("查看历史记录")
+        }
     }
+
 }
 
 @Composable
-fun AnalysisScreen(apiKey: String, username: String) {
+fun AnalysisScreen(
+    apiKey: String,
+    username: String,
+    onNavigateToHistory: ()-> Unit,
+    onBackToLogin: () -> Unit
+) {
     // 创建 ViewModel 实例
     val viewModel: EmotionViewModel = viewModel()
     var inputText by remember { mutableStateOf("") }
@@ -401,6 +463,28 @@ fun AnalysisScreen(apiKey: String, username: String) {
                     color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.weight(1f))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                // 历史记录按钮
+                IconButton(onClick = onNavigateToHistory) {
+                    Icon(
+                        imageVector = Icons.Filled.History,
+                        contentDescription = "历史记录",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+                IconButton(onClick = onBackToLogin) {
+                    Icon(
+                        imageVector = Icons.Filled.ExitToApp,
+                        contentDescription = "退出登录",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
                 Text(
                     text = username.take(8),
                     style = MaterialTheme.typography.bodyMedium,
@@ -631,19 +715,20 @@ fun AnalysisScreen(apiKey: String, username: String) {
                 )
             }
         }
-        if (viewModel.history.isNotEmpty()){
+
+        /*if (viewModel.history.isNotEmpty()){
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 "近期情绪记录",
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            LazyRow {
+            /*LazyRow {
                 items(viewModel.history) { item ->
                     EmotionHistoryItem(item, emotionColors)
                 }
-            }
-        }
+            }*/
+        }*/
 
         /*if (emotionState is EmotionState.Success) {
             val result = (emotionState as EmotionState.Success).result
@@ -862,7 +947,7 @@ fun EmotionResultCard(result: EmotionResult, emotionColors: Map<String, Color>) 
 @Composable
 fun PreviewLoginScreen() {
     IvoryTowerWhisperTheme {
-        LoginScreen(onLoginSuccess = { _, _ -> })
+        LoginScreen(onLoginSuccess = { _, _ -> }, onNavigateToHistory = {->})
     }
 }
 
@@ -870,6 +955,6 @@ fun PreviewLoginScreen() {
 @Composable
 fun PreviewAnalysisScreen() {
     IvoryTowerWhisperTheme {
-        AnalysisScreen(apiKey = "test_key", username = "张三")
+        AnalysisScreen(apiKey = "test_key", username = "张三", onNavigateToHistory = {->}, onBackToLogin = {->})
     }
 }

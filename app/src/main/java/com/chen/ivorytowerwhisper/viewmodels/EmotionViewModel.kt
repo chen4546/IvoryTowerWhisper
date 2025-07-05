@@ -1,9 +1,13 @@
 package com.chen.ivorytowerwhisper.viewmodels
 
+import android.app.Application
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.chen.ivorytowerwhisper.data.local.LocalStorage
 import com.chen.ivorytowerwhisper.data.remote.DeepSeekService
 import com.chen.ivorytowerwhisper.data.remote.RetrofitClient
 import com.chen.ivorytowerwhisper.model.EmotionAnalysisRequest
@@ -21,8 +25,8 @@ import org.json.JSONObject
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class EmotionViewModel : ViewModel() {
-
+class EmotionViewModel (application: Application): AndroidViewModel(application) {
+    //private val context: Context = application.applicationContext
     private val service = RetrofitClient.deepSeekApiService
 
 
@@ -44,8 +48,24 @@ class EmotionViewModel : ViewModel() {
     }
     注意关注学业压力、人际关系等校园常见问题。
     """.trimIndent()
+    init {
+        loadSavedHistory()
+    }
+
     fun setApiKey(key: String) {
         _apiKey.value = key
+    }
+    // 加载保存的历史记录
+    private fun loadSavedHistory() {
+        val context = getApplication<Application>().applicationContext
+        val savedHistory = LocalStorage.getHistory(context)
+        _history.clear()
+        _history.addAll(savedHistory)
+    }
+    // 保存历史记录到本地
+    private fun saveHistory() {
+        val context = getApplication<Application>().applicationContext
+        LocalStorage.saveHistory(context, _history.toList())
     }
 
     fun analyzeTextEmotion(text: String) {
@@ -110,6 +130,12 @@ class EmotionViewModel : ViewModel() {
             }
         }
         throw Exception("空响应")
+    }
+    // 清除历史记录
+    fun clearHistory() {
+        _history.clear()
+        val context = getApplication<Application>().applicationContext
+        LocalStorage.saveHistory(context, emptyList())
     }
 }
 
