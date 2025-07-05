@@ -51,4 +51,9 @@ object LocalStorage {
         val sharedPref = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         sharedPref.edit().remove(KEY_USER_PREFS).apply()
     }
+    // 添加清除所有数据的方法
+    fun clearAllData(context: Context) {
+        val sharedPref = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        sharedPref.edit().clear().apply()
+    }
 }

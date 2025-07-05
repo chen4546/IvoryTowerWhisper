@@ -1,5 +1,6 @@
 package com.chen.ivorytowerwhisper.viewmodels
 
+import android.content.res.Configuration
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -8,6 +9,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -65,6 +67,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -73,11 +76,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.chen.ivorytowerwhisper.R
 import com.chen.ivorytowerwhisper.data.local.LocalStorage
 import com.chen.ivorytowerwhisper.model.EmotionHistory
 import com.chen.ivorytowerwhisper.model.EmotionResult
 import com.chen.ivorytowerwhisper.model.EmotionState
 import com.chen.ivorytowerwhisper.model.Screen
+import com.chen.ivorytowerwhisper.model.UserPreferences
 import com.chen.ivorytowerwhisper.ui.theme.Blue40
 import com.chen.ivorytowerwhisper.ui.theme.Blue80
 import com.chen.ivorytowerwhisper.ui.theme.EmotionAngry
@@ -99,6 +104,7 @@ fun ITWhisper(innerPadding: androidx.compose.foundation.layout.PaddingValues) {
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Login) }
     var apiKey by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
+    var isDarkTheme by remember { mutableStateOf(false) } // 添加深色模式状态
     // 从本地加载保存的凭证
     val context = LocalContext.current
     LaunchedEffect(Unit) {
@@ -108,40 +114,50 @@ fun ITWhisper(innerPadding: androidx.compose.foundation.layout.PaddingValues) {
             username = prefs.username
             currentScreen = Screen.Analysis
         }
+        // 检查系统是否处于深色模式
+        val uiMode = context.resources.configuration.uiMode
+        isDarkTheme = uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
     }
-    Surface(
-    modifier = Modifier
-    .fillMaxSize()
-    .padding(innerPadding),
-    color = MaterialTheme.colorScheme.background
+    IvoryTowerWhisperTheme(darkTheme = isDarkTheme) {Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding),
+        color = MaterialTheme.colorScheme.background
     ) {
         when (currentScreen) {
             Screen.Login -> LoginScreen(
                 onLoginSuccess = { key, user ->
                     apiKey = key
                     username = user
+                    // 保存用户凭证
+                    LocalStorage.saveUserPreferences(context, UserPreferences(key, user))
                     currentScreen = Screen.Analysis
                 },
-                onNavigateToHistory = {currentScreen= Screen.History}
+                onNavigateToHistory = { currentScreen = Screen.History }
             )
+
             Screen.Analysis -> AnalysisScreen(
                 apiKey = apiKey,
                 username = username,
                 onNavigateToHistory = { currentScreen = Screen.History },
                 onBackToLogin = {
+                    LocalStorage.clearUserPreferences(context)
+                    apiKey = ""
+                    username = ""
                     currentScreen = Screen.Login
-                })
-            Screen.History -> HistoryScreen (
+                },
+                toggleTheme = { isDarkTheme = !isDarkTheme } // 添加主题切换回调
+            )
+
+            Screen.History -> HistoryScreen(
                 onBack = {
-                    if (apiKey.isNotEmpty()){
-                        currentScreen= Screen.Analysis
-                    }else{
-                        currentScreen= Screen.Login
-                    }
+
+                    currentScreen = Screen.Analysis
                 }
             )
         }
     }
+}
 }
 
 @Composable
@@ -371,21 +387,21 @@ fun LoginScreen(onLoginSuccess: (String, String) -> Unit,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
             }
-        }
-        // 在底部添加历史记录按钮
-        Button(
-            onClick = onNavigateToHistory,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-                .padding(top = 16.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary
-            ),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Text("查看历史记录")
+            /*// 在底部添加历史记录按钮
+            Button(
+                onClick = onNavigateToHistory,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .padding(top = 16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.onSecondary
+                ),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text("查看历史记录")
+            }*/
         }
     }
 
@@ -396,7 +412,8 @@ fun AnalysisScreen(
     apiKey: String,
     username: String,
     onNavigateToHistory: ()-> Unit,
-    onBackToLogin: () -> Unit
+    onBackToLogin: () -> Unit,
+    toggleTheme:()-> Unit
 ) {
     // 创建 ViewModel 实例
     val viewModel: EmotionViewModel = viewModel()
@@ -469,6 +486,7 @@ fun AnalysisScreen(
                         .padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+
                 // 历史记录按钮
                 IconButton(onClick = onNavigateToHistory) {
                     Icon(
@@ -484,6 +502,18 @@ fun AnalysisScreen(
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
+                Spacer(modifier = Modifier.width(48.dp))
+                //切换主题
+                IconButton(onClick = toggleTheme){
+                    Icon(
+                        painter = painterResource(
+                            if (isSystemInDarkTheme()) R.drawable.ic_sun else R.drawable.ic_moon
+                        ),
+                        contentDescription = "切换主题",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+
             }
                 Text(
                     text = username.take(8),
@@ -955,6 +985,6 @@ fun PreviewLoginScreen() {
 @Composable
 fun PreviewAnalysisScreen() {
     IvoryTowerWhisperTheme {
-        AnalysisScreen(apiKey = "test_key", username = "张三", onNavigateToHistory = {->}, onBackToLogin = {->})
+        AnalysisScreen(apiKey = "test_key", username = "张三", onNavigateToHistory = {->}, onBackToLogin = {->}, toggleTheme = {->})
     }
 }
