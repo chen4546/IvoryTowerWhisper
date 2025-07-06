@@ -1,11 +1,11 @@
 # IvoryTower Whisper (象牙塔心语)
 <a href="https://github.com/chen4546/IvoryTowerWhisper"><img src="https://img.shields.io/badge/kotlin-8A2BE2" alt="kotlin"></a>
-<a href="https://github.com/chen4546/IvoryTowerWhisper.git"><img src="https://img.shields.io/badge/Android Studio-blue" alt="AS"></a>
-<a href="https://github.com/chen4546/IvoryTowerWhisper.git"><img src="https://img.shields.io/badge/Deepseek-4D6BFE" alt="AS"></a>
-<a href="https://github.com/chen4546/IvoryTowerWhisper.git"><img src="https://img.shields.io/badge/智能移动开发-大作业-blue" alt="course"></a>
-<a href="https://github.com/chen4546/IvoryTowerWhisper.git"><img src="https://img.shields.io/badge/动感地带AI+高校创智计划-内容赛道-purple" alt="migu"></a>
-<a href="https://github.com/chen4546/IvoryTowerWhisper.git"><img src="https://img.shields.io/badge/IvoryTower Whisper-象牙塔心语-7986CB" alt="migu"></a>
-<a href="https://github.com/chen4546/IvoryTowerWhisper.git"><img src="https://img.shields.io/badge/by-今天早睡了吗-81C784" alt="migu"></a>
+<a href="https://github.com/chen4546/IvoryTowerWhisper"><img src="https://img.shields.io/badge/Android Studio-blue" alt="AS"></a>
+<a href="https://github.com/chen4546/IvoryTowerWhisper"><img src="https://img.shields.io/badge/Deepseek-4D6BFE" alt="AS"></a>
+<a href="https://github.com/chen4546/IvoryTowerWhisper"><img src="https://img.shields.io/badge/智能移动开发-大作业-blue" alt="course"></a>
+<a href="https://github.com/chen4546/IvoryTowerWhisper"><img src="https://img.shields.io/badge/动感地带AI+高校创智计划-内容赛道-purple" alt="migu"></a>
+<a href="https://github.com/chen4546/IvoryTowerWhisper"><img src="https://img.shields.io/badge/IvoryTower Whisper-象牙塔心语-7986CB" alt="migu"></a>
+<a href="https://github.com/chen4546/IvoryTowerWhisper"><img src="https://img.shields.io/badge/by-今天早睡了吗-81C784" alt="migu"></a>
 
 
 
