@@ -59,17 +59,14 @@
 4. 在历史页面回顾您的情绪变化历程
    
 
-<img src="./doc/asset/ui_login.png" alt="登录页" width="300">
-<img src="./doc/asset/ui1.png" alt="分析1" width="300">
-<img src="./doc/asset/ui2.png" alt="分析2" width="300">
-<img src="./doc/asset/ui_history.png" alt="历史记录" width="300">
+<img src="./doc/asset/ui_login.png" alt="登录页" width="300"> <img src="./doc/asset/ui1.png" alt="分析1" width="300"> <img src="./doc/asset/ui2.png" alt="分析2" width="300"> <img src="./doc/asset/ui_history.png" alt="历史记录" width="300">
 
 
 ### 主题切换
 - 点击右上角的太阳/月亮图标切换深色/浅色模式
 - 应用会自动保存您的主题偏好
 
-<img src="./doc/asset/ui_dark_l.png" alt="暗色登录页" width="300"><img src="./doc/asset/ui_dark.png" alt="暗色分析页" width="300"><img src="./doc/asset/ui_dark_h.png" alt="暗色历史记录" width="300">
+<img src="./doc/asset/ui_dark_l.png" alt="暗色登录页" width="300"> <img src="./doc/asset/ui_dark.png" alt="暗色分析页" width="300"> <img src="./doc/asset/ui_dark_h.png" alt="暗色历史记录" width="300">
 ![](./doc/asset/ui_dark_l.png)
 ![](./doc/asset/ui_dark.png)
 ![](./doc/asset/ui_dark_h.png)
