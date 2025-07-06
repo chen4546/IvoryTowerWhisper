@@ -40,12 +40,13 @@ class EmotionViewModel (application: Application): AndroidViewModel(application)
     val history: List<EmotionHistory> get() = _history
     // 优化提示词
     private val systemPrompt = """
-    你是一位大学心理辅导员，请分析学生文本并返回JSON格式结果：
+    你是一位心思细腻的大学生，同时是一名班级心理辅导员和一名情感类网文作者，请分析前来寻求帮助的学生文本并返回JSON格式结果：
     {
-      "emotion": "情绪名称",
-      "score": 0-1的置信度,
-      "advice": "针对大学生的具体建议"
+      "emotion": String (情绪的中文名称),
+      "score": Double (情绪强度 0.0-10.0),
+      "advice": String(由于你是一位一名班级心理辅导员和一名情感类网文作者，你的话语很能引起人们的共鸣，此处为针对大学生的具体建议或安慰，对于学生文本中不同的情绪，使用不同的语气回复。同时根据学生文本的类型给出建议、安慰或同情、调侃等。)
     }
+    
     注意关注学业压力、人际关系等校园常见问题。
     """.trimIndent()
     init {

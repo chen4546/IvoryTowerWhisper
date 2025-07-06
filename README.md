@@ -21,7 +21,7 @@
 
 ### 🌈 情绪分析与建议
 - 智能分析用户输入文本中的情绪状态
-- 提供针对大学生的专业心理建议
+- 提供针对大学生的专业心理辅导
 - 识别多种情绪类型：快乐、平静、悲伤、愤怒、焦虑等
 
 ### 📚 情绪历史记录
@@ -42,25 +42,34 @@
 ### 🎨 美观的用户界面
 - Material Design 3设计规范
 - 情感化色彩系统
-- 流畅的动画效果
+- 模仿呼吸起伏的动画效果
 
 ## 使用说明
 
 ### 安装要求
 - Android 8.0 (API 26) 或更高版本
 - 需要有效的DeepSeek API密钥 
-- [获取deepseek API密钥](https://platform.deepseek.com/api_keys)
+- [获取deepseek API密钥](https://platform.deepseek.com/api_keys) 或 [使用开发者提供的测试密钥](./app/src/main/java/com/chen/ivorytowerwhisper/auth/APIkeys.json)
 - [获取APK](https://github.com/chen4546/IvoryTowerWhisper/releases/download/release_1.1.0/IvoryTower.Whisper_1.1.0.apk)
 
 ### 快速开始
-1. 在登录页面输入您的DeepSeek API密钥和昵称
+1. 在登录页面输入您的DeepSeek API密钥和昵称       
 2. 在分析页面分享您的感受或当前心情
 3. 查看应用提供的情绪分析结果和专业建议
 4. 在历史页面回顾您的情绪变化历程
+   
+![](./doc/asset/ui_login.png)
+![](./doc/asset/ui1.png)
+![](./doc/asset/ui2.png)
+![](./doc/asset/ui_history.png)
 
 ### 主题切换
 - 点击右上角的太阳/月亮图标切换深色/浅色模式
 - 应用会自动保存您的主题偏好
+
+![](./doc/asset/ui_dark_l.png)
+![](./doc/asset/ui_dark.png)
+![](./doc/asset/ui_dark_h.png)
 
 ## 项目结构
 
@@ -89,7 +98,8 @@
 ### 环境要求
 - Android Studio
 - Kotlin
-- DeepSeek APIKey
+- DeepSeek APIKey [测试用APIKey](./app/src/main/java/com/chen/ivorytowerwhisper/auth/APIkeys.json)
+- 情绪文本 [测试用emotion text](./app/src/main/java/com/chen/ivorytowerwhisper/data/repository/emotion_text.txt)
 
 ### 构建步骤
 1. 克隆仓库：
