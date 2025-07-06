@@ -50,7 +50,7 @@
 - Android 8.0 (API 26) 或更高版本
 - 需要有效的DeepSeek API密钥 
 - [获取deepseek API密钥](https://platform.deepseek.com/api_keys) 或 [使用开发者提供的测试密钥](./app/src/main/java/com/chen/ivorytowerwhisper/auth/APIkeys.json)
-- [获取APK](https://github.com/chen4546/IvoryTowerWhisper/releases/download/release_1.1.0/IvoryTower.Whisper_1.1.0.apk)
+- [获取APK](https://github.com/chen4546/IvoryTowerWhisper/releases)
 
 ### 快速开始
 1. 在登录页面输入您的DeepSeek API密钥和昵称       
