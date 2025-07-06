@@ -68,6 +68,10 @@
 
 <img src="./doc/asset/ui_dark_l.png" alt="暗色登录页" width="300"> <img src="./doc/asset/ui_dark.png" alt="暗色分析页" width="300"> <img src="./doc/asset/ui_dark_h.png" alt="暗色历史记录" width="300">
 
+### 演示视频
+[模拟器+实机演示](./doc/asset/模拟器+实机演示.mp4)   
+前半段为 `Android Studio` 中的模拟器演示，后半段为实机安装 `release` 版的 `APK` 安装包后演示 
+
 ## 项目结构
 
 ```
