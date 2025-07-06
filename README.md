@@ -1,4 +1,8 @@
 # IvoryTower Whisper (象牙塔心语)
+
+
+**IvoryTower Whisper (象牙塔心语)** 是一款专为大学生设计的AI心理健康伴侣应用。通过接入DeepSeek的API和精心设计的Prompt，实现了为大学生定制的心理支持功能。用户可以将IvoryTower Whisper当作一位值得倾诉的密友，道出自己的喜怒哀乐，并从应用中获得专业的建议和情感支持。
+
 <a href="https://github.com/chen4546/IvoryTowerWhisper"><img src="https://img.shields.io/badge/kotlin-8A2BE2" alt="kotlin"></a>
 <a href="https://github.com/chen4546/IvoryTowerWhisper"><img src="https://img.shields.io/badge/Android Studio-blue" alt="AS"></a>
 <a href="https://github.com/chen4546/IvoryTowerWhisper"><img src="https://img.shields.io/badge/Deepseek-4D6BFE" alt="AS"></a>
@@ -6,11 +10,6 @@
 <a href="https://github.com/chen4546/IvoryTowerWhisper"><img src="https://img.shields.io/badge/动感地带AI+高校创智计划-内容赛道-purple" alt="migu"></a>
 <a href="https://github.com/chen4546/IvoryTowerWhisper"><img src="https://img.shields.io/badge/IvoryTower Whisper-象牙塔心语-7986CB" alt="migu"></a>
 <a href="https://github.com/chen4546/IvoryTowerWhisper"><img src="https://img.shields.io/badge/by-今天早睡了吗-81C784" alt="migu"></a>
-
-
-
-**IvoryTower Whisper (象牙塔心语)** 是一款专为大学生设计的AI心理健康伴侣应用。通过接入DeepSeek的API和精心设计的Prompt，实现了为大学生定制的心理支持功能。用户可以将IvoryTower Whisper当作一位值得倾诉的密友，道出自己的喜怒哀乐，并从应用中获得专业的建议和情感支持。
-
 
 
 
