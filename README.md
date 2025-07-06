@@ -75,9 +75,12 @@
 │   ├── src
 │   │   ├── main
 │   │   │   ├── java/com/chen/ivorytowerwhisper
+│   │   │   │   ├── auth
+│   │   │   │   │   └── APIkeys.json #存放开发用的APIkey 
 │   │   │   │   ├── data
 │   │   │   │   │   ├── local        # 本地存储实现
-│   │   │   │   │   └── remote       # 网络请求实现
+│   │   │   │   │   ├── remote       # 网络请求实现
+│   │   │   │   │   └── repository   # 情绪文本仓库       
 │   │   │   │   ├── model            # 数据模型
 │   │   │   │   ├── ui
 │   │   │   │   │   └── theme        # 应用主题和样式
