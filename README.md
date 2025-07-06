@@ -67,9 +67,6 @@
 - 应用会自动保存您的主题偏好
 
 <img src="./doc/asset/ui_dark_l.png" alt="暗色登录页" width="300"> <img src="./doc/asset/ui_dark.png" alt="暗色分析页" width="300"> <img src="./doc/asset/ui_dark_h.png" alt="暗色历史记录" width="300">
-![](./doc/asset/ui_dark_l.png)
-![](./doc/asset/ui_dark.png)
-![](./doc/asset/ui_dark_h.png)
 
 ## 项目结构
 
